@@ -1,0 +1,557 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0a0d1b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>FOCUS MODE</title>
+
+<style>
+:root {
+  --bg: #090d1b;
+  --card: #151c30;
+  --purple: #a78bfa;
+  --muted: #a5acc5;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+  background: var(--bg);
+  color: white;
+}
+
+header {
+  padding: 25px 20px;
+  background: #11172a;
+  text-align: center;
+  border-bottom: 1px solid #2c3450;
+}
+
+.logo {
+  color: var(--purple);
+  font-size: 25px;
+  font-weight: 900;
+  letter-spacing: 3px;
+}
+
+header p {
+  font-size: 13px;
+}
+
+.container {
+  max-width: 850px;
+  margin: auto;
+  padding: 20px;
+}
+
+h1 {
+  font-size: 27px;
+  margin-bottom: 8px;
+}
+
+h2 {
+  font-size: 21px;
+}
+
+p {
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid #303954;
+  border-radius: 22px;
+  padding: 23px;
+  margin: 20px 0;
+}
+
+.focus-card {
+  text-align: center;
+  background: linear-gradient(145deg, #2b2150, #151c30);
+}
+
+.timer {
+  font-size: clamp(55px, 12vw, 75px);
+  font-weight: 800;
+  color: #c4b5fd;
+  margin: 20px 0;
+  font-variant-numeric: tabular-nums;
+}
+
+button {
+  border: 0;
+  border-radius: 12px;
+  padding: 14px 18px;
+  color: white;
+  background: #8b5cf6;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+button:active {
+  transform: scale(.98);
+}
+
+.primary {
+  width: 100%;
+  max-width: 350px;
+}
+
+input {
+  background: #0d1427;
+  border: 1px solid #39415c;
+  border-radius: 12px;
+  padding: 14px;
+  color: white;
+  font-size: 16px;
+  min-width: 0;
+}
+
+#minutes {
+  width: 100px;
+  text-align: center;
+}
+
+.task-form {
+  display: flex;
+  gap: 8px;
+}
+
+#taskInput {
+  flex: 1;
+  width: 100%;
+}
+
+.task {
+  background: #222b43;
+  border-radius: 12px;
+  padding: 12px;
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.task span {
+  flex: 1;
+  overflow-wrap: anywhere;
+}
+
+.task.done span {
+  text-decoration: line-through;
+  opacity: .5;
+}
+
+.task button {
+  padding: 9px 12px;
+}
+
+.delete {
+  background: #b83d59;
+}
+
+.stats {
+  display: flex;
+  justify-content: space-around;
+  gap: 15px;
+  text-align: center;
+}
+
+.number {
+  color: var(--purple);
+  font-size: 33px;
+  font-weight: 800;
+}
+
+/* LOCK SCREEN */
+
+#lockScreen {
+  display: none;
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  z-index: 999999;
+  background: radial-gradient(
+    circle at top,
+    #392565,
+    #090d1b 75%
+  );
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 25px;
+  overflow-y: auto;
+}
+
+#lockScreen.active {
+  display: flex !important;
+}
+
+.lock-icon {
+  font-size: 75px;
+  margin-bottom: 12px;
+  animation: float 3s ease-in-out infinite;
+}
+
+#lockTimer {
+  font-size: clamp(58px, 15vw, 95px);
+  font-weight: 900;
+  color: #c4b5fd;
+  margin: 25px 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.quote {
+  max-width: 330px;
+  color: #b4b9d1;
+  line-height: 1.7;
+  font-size: 18px;
+}
+
+.end-btn {
+  background: transparent;
+  border: 1px solid #70618b;
+  color: #c9c2db;
+  margin-top: 35px;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+
+footer {
+  text-align: center;
+  padding: 25px;
+  color: #7b849e;
+  font-size: 13px;
+}
+
+@media(max-width: 480px) {
+  .container {
+    padding: 15px;
+  }
+
+  .card {
+    padding: 19px;
+  }
+
+  .task-form {
+    flex-wrap: wrap;
+  }
+
+  .task-form button {
+    width: 100%;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">⚡ FOCUS MODE</div>
+  <p>Take control of your time.</p>
+</header>
+
+<main class="container">
+
+  <h1>Welcome Back 👋</h1>
+  <p>Stay focused. Build your future.</p>
+
+  <section class="card focus-card">
+    <h2>🔥 Deep Focus</h2>
+    <p>Choose your focus duration</p>
+
+    <input
+      type="number"
+      id="minutes"
+      value="25"
+      min="1"
+      max="180"
+    >
+
+    <div class="timer" id="timer">25:00</div>
+
+    <button class="primary" id="startBtn">
+      🔒 Start Focus
+    </button>
+  </section>
+
+  <section class="card">
+    <h2>📋 Daily Tasks</h2>
+
+    <div class="task-form">
+      <input
+        id="taskInput"
+        type="text"
+        placeholder="What will you do today?"
+      >
+
+      <button id="addBtn">+ Add</button>
+    </div>
+
+    <div id="taskList"></div>
+  </section>
+
+  <section class="card">
+    <h2>📊 Your Progress</h2>
+
+    <div class="stats">
+      <div>
+        <div class="number" id="completed">0</div>
+        <p>Tasks Done</p>
+      </div>
+
+      <div>
+        <div class="number" id="focusTotal">0</div>
+        <p>Focus Minutes</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- FOCUS SCREEN -->
+
+<div id="lockScreen">
+  <div class="lock-icon">🔒</div>
+
+  <h1>FOCUS MODE ACTIVE</h1>
+  <p>It's time to focus on yourself.</p>
+
+  <div id="lockTimer">25:00</div>
+
+  <div class="quote">
+    Your future is created by what you do today,
+    not tomorrow.
+  </div>
+
+  <p>Stay disciplined. Stay focused.</p>
+
+  <button class="end-btn" id="endBtn">
+    End Session
+  </button>
+</div>
+
+<footer>
+  FOCUS MODE • Make every minute count
+</footer>
+
+<script>
+const $ = id => document.getElementById(id);
+
+let tasks = [];
+let totalFocus = 0;
+let session = null;
+let interval = null;
+
+function readData(key, fallback) {
+  try {
+    const value = localStorage.getItem(key);
+    return value === null ? fallback : JSON.parse(value);
+  } catch {
+    return fallback;
+  }
+}
+
+function saveData(key, value) {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch (error) {
+    console.warn("Storage unavailable:", error);
+  }
+}
+
+tasks = readData("fm_tasks", []);
+totalFocus = readData("fm_total", 0);
+session = readData("fm_session", null);
+
+if (!Array.isArray(tasks)) tasks = [];
+if (!Number.isFinite(totalFocus)) totalFocus = 0;
+
+function renderTasks() {
+  const list = $("taskList");
+  list.innerHTML = "";
+
+  tasks.forEach((task, index) => {
+    const div = document.createElement("div");
+    div.className = task.done ? "task done" : "task";
+
+    const span = document.createElement("span");
+    span.textContent = task.text;
+
+    const done = document.createElement("button");
+    done.textContent = task.done ? "↩" : "✓";
+    done.onclick = () => {
+      tasks[index].done = !tasks[index].done;
+      saveData("fm_tasks", tasks);
+      renderTasks();
+    };
+
+    const remove = document.createElement("button");
+    remove.textContent = "✕";
+    remove.className = "delete";
+    remove.onclick = () => {
+      tasks.splice(index, 1);
+      saveData("fm_tasks", tasks);
+      renderTasks();
+    };
+
+    div.append(span, done, remove);
+    list.appendChild(div);
+  });
+
+  $("completed").textContent =
+    tasks.filter(task => task.done).length;
+
+  $("focusTotal").textContent = totalFocus;
+}
+
+function addTask() {
+  const input = $("taskInput");
+  const text = input.value.trim();
+
+  if (!text) return;
+
+  tasks.push({ text, done: false });
+  saveData("fm_tasks", tasks);
+
+  input.value = "";
+  renderTasks();
+}
+
+function formatTime(seconds) {
+  const m = Math.floor(seconds / 60);
+  const s = seconds % 60;
+
+  return String(m).padStart(2, "0") +
+    ":" + String(s).padStart(2, "0");
+}
+
+function finishSession() {
+  if (!session) return;
+
+  const minutes = session.minutes;
+  session = null;
+
+  clearInterval(interval);
+  interval = null;
+
+  saveData("fm_session", null);
+
+  totalFocus += minutes;
+  saveData("fm_total", totalFocus);
+
+  $("lockScreen").classList.remove("active");
+  $("timer").textContent = "00:00";
+
+  renderTasks();
+  alert("🎉 Great job! You completed your focus session!");
+}
+
+function updateTimer() {
+  if (!session) return;
+
+  const remaining = Math.max(
+    0,
+    Math.ceil((session.end - Date.now()) / 1000)
+  );
+
+  $("timer").textContent = formatTime(remaining);
+  $("lockTimer").textContent = formatTime(remaining);
+
+  if (remaining === 0) {
+    finishSession();
+  }
+}
+
+function startFocus() {
+  const minutes = Number($("minutes").value);
+
+  if (
+    !Number.isInteger(minutes) ||
+    minutes < 1 ||
+    minutes > 180
+  ) {
+    alert("Choose between 1 and 180 minutes.");
+    return;
+  }
+
+  session = {
+    minutes,
+    end: Date.now() + minutes * 60000
+  };
+
+  saveData("fm_session", session);
+
+  $("lockScreen").classList.add("active");
+
+  clearInterval(interval);
+  updateTimer();
+  interval = setInterval(updateTimer, 1000);
+}
+
+function stopFocus() {
+  if (!confirm("Are you sure you want to end the session?")) {
+    return;
+  }
+
+  session = null;
+  clearInterval(interval);
+  interval = null;
+
+  saveData("fm_session", null);
+  $("lockScreen").classList.remove("active");
+
+  $("timer").textContent = formatTime(
+    (Number($("minutes").value) || 25) * 60
+  );
+}
+
+$("startBtn").addEventListener("click", startFocus);
+$("endBtn").addEventListener("click", stopFocus);
+$("addBtn").addEventListener("click", addTask);
+
+$("taskInput").addEventListener("keydown", event => {
+  if (event.key === "Enter") addTask();
+});
+
+$("minutes").addEventListener("input", () => {
+  if (!session) {
+    const value = Number($("minutes").value) || 25;
+    $("timer").textContent = formatTime(value * 60);
+  }
+});
+
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden && session) updateTimer();
+});
+
+renderTasks();
+
+if (session && session.end > Date.now()) {
+  $("lockScreen").classList.add("active");
+  updateTimer();
+  interval = setInterval(updateTimer, 1000);
+} else if (session) {
+  finishSession();
+}
+</script>
+
+</body>
+</html>
